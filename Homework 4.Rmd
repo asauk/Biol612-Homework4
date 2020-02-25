@@ -1,0 +1,46 @@
+---
+title: "Homework 4 - A.Sauk"
+author: "Alexandra Sauk"
+date: "25/02/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 2 Variables and Hypotheses
+
+I hypothesize that class affected passenger survival as different classes were located on different levels of ship leading to different distances from the life boats.
+
+I hypothesize that age affected passenger survival, either in ability to reach the life boats or preferrential placement on the life boats.
+
+I hypothesize that gender affected passenger survival, either in ability to reach the life boats or preferrential placement on the life boats.
+
+I hypothesize that the number of parents and/or children on board affected passenger survival as those with relatives on board may have prioritized survival of relatives. 
+
+I hypothesize that cabin number affected passenger survival as certain cabins would have been located closer to the crash site and the midline of the ship where it cracked. 
+
+## 3 Mosaic plots of the relationship of categorical predictor variables with survival
+
+```{r}
+my.data<-read.csv("titanic.csv")
+head(my.data)
+
+library("vcd")
+mosaic(survived~pclass, data=my.data)
+mosaic(survived~Gender, data=my.data)
+```
+
+## 3 logi.hist.plot of the relationship of continuous predictor variables with survival
+
+```{r}
+library("popbio")
+
+my.data.parch<-na.omit(data.frame("relatives"=my.data$parch, "survived"=my.data$survived))
+logi.hist.plot(my.data.parch$relatives, my.data.parch$survived, boxp=FALSE, type="hist", col="grey", xlab="Number of parents and/or children")
+
+```
+
+
+
