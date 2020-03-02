@@ -104,4 +104,56 @@ In this case, the automatic and purposeful selection of models resulted in the s
 
 ##8 Variable effects
 
+```{r}
+library("effects")
+plot(allEffects(model1))
+```
 
+All of the effects are in the direction that I expected, however, I was not expected as large of a difference in male and female passenger survival. The variability in survival by age is surprising in that there is a some variability in the survival of children, little variablility for those between 20 and 40, and then variablility in surival increases with age after 40. 
+
+##9 test model assumptions
+
+```{r}
+library("car")
+
+residualPlots(model1)
+
+outlierTest(model1)
+
+influenceIndexPlot(model1, id.n=3)
+
+influencePlot(model1)
+
+vif(model1)
+
+```
+
+##Q10 Results of regression diagnostics
+
+???
+
+##Q11 k-fold cross validation
+
+```{r}
+library(caret)
+ctrl <- trainControl(method = "repeatedcv", number = 10, savePredictions = TRUE)
+my.variables.nona$curvived=as.factor(my.variables.nona$survived)
+train(survived~age+gender+class,data=my.variables.nona, method="glm", family=binomial(link='logit'),
+                 trControl = ctrl, tuneLength = 5)
+```
+
+##Q12 how good are predictions based on k-fold
+???
+
+
+
+##Q13 Confusion matrix
+
+```{r}
+#predictions<-predict(model1, newdata=my.variables.nona,type="response")
+#confusionMatrix(data=as.numeric(predictions>0.5),reference=my.variables.nona$survived)
+
+```
+
+##Q14 Differences in accuracy between k-fold and confusion matrix
+???
