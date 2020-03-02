@@ -19,7 +19,7 @@ I hypothesize that gender affected passenger survival, either in ability to reac
 
 I hypothesize that the number of parents and/or children on board affected passenger survival as those with relatives on board may have prioritized survival of relatives. 
 
-I hypothesize that cabin number affected passenger survival as certain cabins would have been located closer to the crash site and the midline of the ship where it cracked. 
+I hypothesize that fare price affected passenger survival as the fare price is related to the area of the ship that the passengers would be staying in changing their proximity to life boats and potentiall the cracks in the hull. 
 
 ## 3 Mosaic plots of the relationship of categorical predictor variables with survival
 
@@ -40,7 +40,68 @@ library("popbio")
 my.data.parch<-na.omit(data.frame("relatives"=my.data$parch, "survived"=my.data$survived))
 logi.hist.plot(my.data.parch$relatives, my.data.parch$survived, boxp=FALSE, type="hist", col="grey", xlab="Number of parents and/or children")
 
+my.data.age<-na.omit(data.frame("age"=my.data$age, "survived"=my.data$survived))
+logi.hist.plot(my.data.age$age, my.data.age$survived, boxp=FALSE, type="hist", col="grey", xlab="Passenger age")
+
+my.data.fare<-na.omit(data.frame("fare"=my.data$fare, "survived"=my.data$survived))
+logi.hist.plot(my.data.fare$fare, my.data.fare$survived, boxp=FALSE, type="hist", col="grey", xlab="Fare")
+
 ```
 
+##4 Finding the best model
+
+```{r}
+library("bestglm")
+
+my.variables=data.frame("age"=my.data$age,"fare"=my.data$fare,"relatives"=my.data$parch,"gender"=my.data$Gender,"class"=my.data$pclass,"survived"=my.data$survived)
+my.variables.nona=na.omit(my.variables) 
+bestglm(my.variables.nona,IC="AIC",family=binomial)
+```
+
+##5 Logistic Regression
+
+```{r}
+model1<-glm(survived~age+gender+class, data=my.variables.nona)
+summary.lm(model1)
+```
+
+##6 Purposeful selection
+
+```{r}
+univariate.gender=glm(survived~gender, data=my.variables.nona, family=binomial(link="logit"))
+summary(univariate.gender)
+univariate.fare=glm(survived~fare, data=my.variables.nona, family=binomial(link="logit"))
+summary(univariate.fare)
+univariate.relatives=glm(survived~relatives, data=my.variables.nona, family=binomial(link="logit"))
+summary(univariate.relatives)
+univariate.class=glm(survived~class, data=my.variables.nona, family=binomial(link="logit"))
+summary(univariate.class)
+univariate.age=glm(survived~age, data=my.variables.nona, family=binomial(link="logit"))
+summary(univariate.age)
+```
+
+```{r}
+##all variables with p<0.25
+
+model2<-glm(survived~age+gender+class+fare+relatives, data=my.variables.nona)
+summary.lm(model2)
+
+##simple model without relatives and fare
+model3<-glm(survived~age+gender+class, data=my.variables.nona)
+summary.lm(model3)
+
+##compare models
+library("lmtest")
+lrtest(model2,model3)
+
+
+
+```
+
+##7 Compare automatic and purposeful selection
+
+In this case, the automatic and purposeful selection of models resulted in the same best model with the variables of passenger age, gender, and class. 
+
+##8 Variable effects
 
 
