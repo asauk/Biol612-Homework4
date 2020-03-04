@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## 2 Variables and Hypotheses
+## Q2 Variables and Hypotheses
 
 I hypothesize that class affected passenger survival as different classes were located on different levels of ship leading to different distances from the life boats.
 
@@ -19,9 +19,9 @@ I hypothesize that gender affected passenger survival, either in ability to reac
 
 I hypothesize that the number of parents and/or children on board affected passenger survival as those with relatives on board may have prioritized survival of relatives. 
 
-I hypothesize that fare price affected passenger survival as the fare price is related to the area of the ship that the passengers would be staying in changing their proximity to life boats and potentiall the cracks in the hull. 
+I hypothesize that fare price affected passenger survival as the fare price is related to the area of the ship that the passengers would be staying in changing their proximity to life boats and potential the damage to the hull. 
 
-## 3 Mosaic plots of the relationship of categorical predictor variables with survival
+## Q3 Mosaic plots of the relationship of categorical predictor variables with survival
 
 ```{r}
 my.data<-read.csv("titanic.csv")
@@ -32,7 +32,7 @@ mosaic(survived~pclass, data=my.data)
 mosaic(survived~Gender, data=my.data)
 ```
 
-## 3 logi.hist.plot of the relationship of continuous predictor variables with survival
+## Q3 logi.hist.plot of the relationship of continuous predictor variables with survival
 
 ```{r}
 library("popbio")
@@ -48,7 +48,7 @@ logi.hist.plot(my.data.fare$fare, my.data.fare$survived, boxp=FALSE, type="hist"
 
 ```
 
-##4 Finding the best model
+## Q4 Finding the best model
 
 ```{r}
 library("bestglm")
@@ -58,14 +58,14 @@ my.variables.nona=na.omit(my.variables)
 bestglm(my.variables.nona,IC="AIC",family=binomial)
 ```
 
-##5 Logistic Regression
+## Q5 Logistic Regression
 
 ```{r}
 model1<-glm(survived~age+gender+class, data=my.variables.nona)
 summary.lm(model1)
 ```
 
-##6 Purposeful selection
+## Q6 Purposeful selection
 
 ```{r}
 univariate.gender=glm(survived~gender, data=my.variables.nona, family=binomial(link="logit"))
@@ -98,20 +98,20 @@ lrtest(model2,model3)
 
 ```
 
-##7 Compare automatic and purposeful selection
+## Q7 Compare automatic and purposeful selection
 
 In this case, the automatic and purposeful selection of models resulted in the same best model with the variables of passenger age, gender, and class. 
 
-##8 Variable effects
+## Q8 Variable effects
 
 ```{r}
 library("effects")
 plot(allEffects(model1))
 ```
 
-All of the effects are in the direction that I expected, however, I was not expected as large of a difference in male and female passenger survival. The variability in survival by age is surprising in that there is a some variability in the survival of children, little variablility for those between 20 and 40, and then variablility in surival increases with age after 40. 
+All of the effects are in the direction that I expected, however, I was not expecting as large of a difference in male and female passenger survival. The variability in survival by age is surprising in that there is a some variability in the survival of children, little variablility for those between 20 and 40, and then variablility in surival increases with age after 40. 
 
-##9 test model assumptions
+## Q9 test model assumptions
 
 ```{r}
 library("car")
@@ -128,13 +128,13 @@ vif(model1)
 
 ```
 
-##Q10 Results of regression diagnostics
+## Q10 Results of regression diagnostics
 
 The residuals seem to relatively evenly distributed without obvious skews or outliers such that the model appears to fit the data well. There is some potential the model is overestimating survival for male passengers and under estimating survival for female passengers based on the differences in the residuals for gender. 
 
 The outlier test found that row or passenger 25 in the data varies significantly from the other passenger data and should be examined to determine if it is an outlier, input error, or real variable data. The influence plots are also noting row 25 as being influencial data as well as rows 94, 264, and 1169. 
 
-##Q11 k-fold cross validation
+## Q11 k-fold cross validation
 
 ```{r}
 library(caret)
@@ -145,18 +145,20 @@ train(survived~age+gender+class,data=my.variables.nona, method="glm", family=bin
                  trControl = ctrl, tuneLength = 5)
 ```
 
-##Q12 how good are predictions based on k-fold
+## Q12 how good are predictions based on k-fold
 
 Based on the results of the k-fold cross validation, the model is making accurate predictions 78.6% of the time which is okay but could be better suggesting that other variables not included in the model may be better at predicting survivorship of Titanic passengers. 
 
-##Q13 Confusion matrix
+## Q13 Confusion matrix
 
 ```{r}
-#predictions<-predict(model1, data=my.variables.nona$survived,type="response")
-#confusionMatrix(data=as.factor(as.numeric(predictions>0.5)), reference=my.variables.nona$survived)
+
+predictions<-predict(model1, newdata=my.variables.nona, type = "response")
+confusionMatrix(data=as.factor(as.numeric(predictions>0.5)),reference=as.factor(my.variables.nona$survived))
 
 
 ```
 
-##Q14 Differences in accuracy between k-fold and confusion matrix
-???
+
+## Q14 Differences in accuracy between k-fold and confusion matrix
+The confusion matric and the k-fold had accuracy levels of 78.1% and 78.6%, respecitvely. Thus the k-fold is only marginally more accurate than the confusion matrix at predicting passenger survival. 
