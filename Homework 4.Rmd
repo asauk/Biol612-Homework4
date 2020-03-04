@@ -130,28 +130,31 @@ vif(model1)
 
 ##Q10 Results of regression diagnostics
 
-???
+The residuals seem to relatively evenly distributed without obvious skews or outliers such that the model appears to fit the data well. There is some potential the model is overestimating survival for male passengers and under estimating survival for female passengers based on the differences in the residuals for gender. 
+
+The outlier test found that row or passenger 25 in the data varies significantly from the other passenger data and should be examined to determine if it is an outlier, input error, or real variable data. The influence plots are also noting row 25 as being influencial data as well as rows 94, 264, and 1169. 
 
 ##Q11 k-fold cross validation
 
 ```{r}
 library(caret)
+library(e1071)
 ctrl <- trainControl(method = "repeatedcv", number = 10, savePredictions = TRUE)
-my.variables.nona$curvived=as.factor(my.variables.nona$survived)
+my.variables.nona$survived=as.factor(my.variables.nona$survived)
 train(survived~age+gender+class,data=my.variables.nona, method="glm", family=binomial(link='logit'),
                  trControl = ctrl, tuneLength = 5)
 ```
 
 ##Q12 how good are predictions based on k-fold
-???
 
-
+Based on the results of the k-fold cross validation, the model is making accurate predictions 78.6% of the time which is okay but could be better suggesting that other variables not included in the model may be better at predicting survivorship of Titanic passengers. 
 
 ##Q13 Confusion matrix
 
 ```{r}
-#predictions<-predict(model1, newdata=my.variables.nona,type="response")
-#confusionMatrix(data=as.numeric(predictions>0.5),reference=my.variables.nona$survived)
+#predictions<-predict(model1, data=my.variables.nona$survived,type="response")
+#confusionMatrix(data=as.factor(as.numeric(predictions>0.5)), reference=my.variables.nona$survived)
+
 
 ```
 
